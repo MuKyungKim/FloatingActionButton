@@ -1,4 +1,4 @@
-package com.github.clans.fab.sample;
+package com.github.sealstudios.fab.sample;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -17,13 +17,12 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
+import com.github.sealstudios.fab.FloatingActionButton;
+import com.github.sealstudios.fab.FloatingActionMenu;
 import com.github.fab.sample.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class MenusFragment extends Fragment {
 
     private FloatingActionMenu menuRed;
@@ -72,8 +71,8 @@ public class MenusFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 programFab1.setLabelColors(ContextCompat.getColor(getActivity(), R.color.grey),
-                        ContextCompat.getColor(getActivity(), R.color.light_grey),
-                        ContextCompat.getColor(getActivity(), R.color.white_transparent));
+                    ContextCompat.getColor(getActivity(), R.color.light_grey),
+                    ContextCompat.getColor(getActivity(), R.color.white_transparent));
                 programFab1.setLabelTextColor(ContextCompat.getColor(getActivity(), R.color.black));
             }
         });
@@ -179,7 +178,7 @@ public class MenusFragment extends Fragment {
             @Override
             public void onAnimationStart(Animator animation) {
                 menuGreen.getMenuIconView().setImageResource(menuGreen.isOpened()
-                        ? R.drawable.ic_close : R.drawable.ic_star);
+                    ? R.drawable.ic_close : R.drawable.ic_star);
             }
         });
 

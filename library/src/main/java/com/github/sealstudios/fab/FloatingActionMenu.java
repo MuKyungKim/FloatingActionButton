@@ -1,4 +1,4 @@
-package com.github.clans.fab;
+package com.github.sealstudios.fab;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -12,9 +12,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +38,9 @@ public class FloatingActionMenu extends ViewGroup {
     private static final int OPEN_UP = 0;
     private static final int OPEN_DOWN = 1;
 
+    private static final int OPEN_LEFT = 2;
+    private static final int OPEN_RIGHT = 3;
+
     private static final int LABELS_POSITION_LEFT = 0;
     private static final int LABELS_POSITION_RIGHT = 1;
 
@@ -48,6 +51,7 @@ public class FloatingActionMenu extends ViewGroup {
     private int mButtonSpacing = Util.dpToPx(getContext(), 0f);
     private FloatingActionButton mMenuButton;
     private int mMaxButtonWidth;
+    private int mMaxButtonHeight;
     private int mLabelsMargin = Util.dpToPx(getContext(), 0f);
     private int mLabelsVerticalOffset = Util.dpToPx(getContext(), 0f);
     private int mButtonsCount;
@@ -275,7 +279,23 @@ public class FloatingActionMenu extends ViewGroup {
         if (mOpenDirection == OPEN_UP) {
             collapseAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_LEFT : OPENED_PLUS_ROTATION_RIGHT;
             expandAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_LEFT : OPENED_PLUS_ROTATION_RIGHT;
-        } else {
+        } else if (mOpenDirection == OPEN_DOWN){
+            collapseAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_RIGHT : OPENED_PLUS_ROTATION_LEFT;
+            expandAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_RIGHT : OPENED_PLUS_ROTATION_LEFT;
+
+
+
+        }else if (mOpenDirection == OPEN_LEFT) {
+
+
+            // sets collapse and expand angle
+            // sets labels animation and fab icon animation
+
+
+
+            collapseAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_LEFT : OPENED_PLUS_ROTATION_RIGHT;
+            expandAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_LEFT : OPENED_PLUS_ROTATION_RIGHT;
+        } else { // OPEN_RIGHT
             collapseAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_RIGHT : OPENED_PLUS_ROTATION_LEFT;
             expandAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_RIGHT : OPENED_PLUS_ROTATION_LEFT;
         }
@@ -309,49 +329,103 @@ public class FloatingActionMenu extends ViewGroup {
         int width = 0;
         int height = 0;
         mMaxButtonWidth = 0;
+        mMaxButtonHeight = 0;
         int maxLabelWidth = 0;
 
-        measureChildWithMargins(mImageToggle, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
-        for (int i = 0; i < mButtonsCount; i++) {
-            View child = getChildAt(i);
+        if (mOpenDirection < 2){
 
-            if (child.getVisibility() == GONE || child == mImageToggle) continue;
+            measureChildWithMargins(mImageToggle, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
-            measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
-            mMaxButtonWidth = Math.max(mMaxButtonWidth, child.getMeasuredWidth());
-        }
+            for (int i = 0; i < mButtonsCount; i++) {
+                View child = getChildAt(i);
 
-        for (int i = 0; i < mButtonsCount; i++) {
-            int usedWidth = 0;
-            View child = getChildAt(i);
+                if (child.getVisibility() == GONE || child == mImageToggle) continue;
 
-            if (child.getVisibility() == GONE || child == mImageToggle) continue;
-
-            usedWidth += child.getMeasuredWidth();
-            height += child.getMeasuredHeight();
-
-            Label label = (Label) child.getTag(R.id.fab_label);
-            if (label != null) {
-                int labelOffset = (mMaxButtonWidth - child.getMeasuredWidth()) / (mUsingMenuLabel ? 1 : 2);
-                int labelUsedWidth = child.getMeasuredWidth() + label.calculateShadowWidth() + mLabelsMargin + labelOffset;
-                measureChildWithMargins(label, widthMeasureSpec, labelUsedWidth, heightMeasureSpec, 0);
-                usedWidth += label.getMeasuredWidth();
-                maxLabelWidth = Math.max(maxLabelWidth, usedWidth + labelOffset);
+                measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+                mMaxButtonWidth = Math.max(mMaxButtonWidth, child.getMeasuredWidth());
+                mMaxButtonHeight = Math.max(mMaxButtonHeight, child.getMeasuredHeight());
             }
-        }
 
-        width = Math.max(mMaxButtonWidth, maxLabelWidth + mLabelsMargin) + getPaddingLeft() + getPaddingRight();
+            for (int i = 0; i < mButtonsCount; i++) {
+                int usedWidth = 0;
+                View child = getChildAt(i);
 
-        height += mButtonSpacing * (mButtonsCount - 1) + getPaddingTop() + getPaddingBottom();
-        height = adjustForOvershoot(height);
+                if (child.getVisibility() == GONE || child == mImageToggle) continue;
 
-        if (getLayoutParams().width == LayoutParams.MATCH_PARENT) {
-            width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-        }
+                usedWidth += child.getMeasuredWidth();
+                height += child.getMeasuredHeight();
 
-        if (getLayoutParams().height == LayoutParams.MATCH_PARENT) {
-            height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+                Label label = (Label) child.getTag(R.id.fab_label);
+                if (label != null) {
+                    int labelOffset = (mMaxButtonWidth - child.getMeasuredWidth()) / (mUsingMenuLabel ? 1 : 2);
+                    int labelUsedWidth = child.getMeasuredWidth() + label.calculateShadowWidth() + mLabelsMargin + labelOffset;
+                    measureChildWithMargins(label, widthMeasureSpec, labelUsedWidth, heightMeasureSpec, 0);
+                    usedWidth += label.getMeasuredWidth();
+                    maxLabelWidth = Math.max(maxLabelWidth, usedWidth + labelOffset);
+                }
+            }
+            width = Math.max(mMaxButtonWidth, maxLabelWidth + mLabelsMargin) + getPaddingLeft() + getPaddingRight();
+
+            height += mButtonSpacing * (mButtonsCount - 1) + getPaddingTop() + getPaddingBottom();
+            height = adjustForOvershoot(height);
+
+            if (getLayoutParams().width == LayoutParams.MATCH_PARENT) {
+                width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+            }
+
+            if (getLayoutParams().height == LayoutParams.MATCH_PARENT) {
+                height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+            }
+
+
+        } else {
+
+            measureChildWithMargins(mImageToggle, widthMeasureSpec, 0, heightMeasureSpec, 0);
+
+            for (int i = 0; i < mButtonsCount; i++) {
+                View child = getChildAt(i);
+
+                if (child.getVisibility() == GONE || child == mImageToggle) continue;
+
+                measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+                mMaxButtonWidth = Math.max(mMaxButtonWidth, child.getMeasuredWidth());
+                mMaxButtonHeight = Math.max(mMaxButtonHeight, child.getMeasuredHeight());
+            }
+
+            for (int i = 0; i < mButtonsCount; i++) {
+                int usedWidth = 0;
+                View child = getChildAt(i);
+
+                if (child.getVisibility() == GONE || child == mImageToggle) continue;
+                usedWidth += child.getMeasuredWidth();
+                width += child.getMeasuredWidth();
+
+                Label label = (Label) child.getTag(R.id.fab_label);
+                if (label != null) {
+                    int labelOffset = (mMaxButtonWidth - child.getMeasuredWidth()) / (mUsingMenuLabel ? 1 : 2);
+                    int labelUsedWidth = child.getMeasuredWidth() + label.calculateShadowWidth() + mLabelsMargin + labelOffset;
+                    measureChildWithMargins(label, widthMeasureSpec, labelUsedWidth, heightMeasureSpec, 0);
+                    usedWidth += label.getMeasuredWidth();
+                    maxLabelWidth = Math.max(maxLabelWidth, usedWidth + labelOffset);
+                }
+            }
+
+            //height = Math.max(mMaxButtonWidth, maxLabelWidth + mLabelsMargin) + getPaddingLeft() + getPaddingRight();
+            height = Math.max(mMaxButtonHeight, maxLabelWidth + mLabelsMargin) + getPaddingLeft() + getPaddingRight();
+
+
+            width += mButtonSpacing * (mButtonsCount - 1) + getPaddingLeft() + getPaddingRight();
+            width = adjustForOvershoot(width);
+
+            if (getLayoutParams().height == LayoutParams.MATCH_PARENT) {
+                height = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+            }
+
+            if (getLayoutParams().width == LayoutParams.MATCH_PARENT) {
+                width = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+            }
+
         }
 
         setMeasuredDimension(width, height);
@@ -359,30 +433,92 @@ public class FloatingActionMenu extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        int menuButtonLeft = 0;
+        int menuButtonTop = 0;
+        int imageLeft = 0;
+        int imageTop = 0;
         int buttonsHorizontalCenter = mLabelsPosition == LABELS_POSITION_LEFT
                 ? r - l - mMaxButtonWidth / 2 - getPaddingRight()
                 : mMaxButtonWidth / 2 + getPaddingLeft();
-        boolean openUp = mOpenDirection == OPEN_UP;
 
-        int menuButtonTop = openUp
-                ? b - t - mMenuButton.getMeasuredHeight() - getPaddingBottom()
-                : getPaddingTop();
-        int menuButtonLeft = buttonsHorizontalCenter - mMenuButton.getMeasuredWidth() / 2;
+        int buttonsVerticalCenter =  b - t - mMaxButtonHeight / 2;
 
-        mMenuButton.layout(menuButtonLeft, menuButtonTop, menuButtonLeft + mMenuButton.getMeasuredWidth(),
+
+        switch (mOpenDirection){
+            case 0 :
+                //up
+                menuButtonTop = b - t - mMenuButton.getMeasuredHeight() - getPaddingBottom();
+                menuButtonLeft = buttonsHorizontalCenter - mMenuButton.getMeasuredWidth() / 2;
+                mMenuButton.layout(menuButtonLeft, menuButtonTop, menuButtonLeft + mMenuButton.getMeasuredWidth(),
+                    menuButtonTop + mMenuButton.getMeasuredHeight());
+                imageLeft = buttonsHorizontalCenter - mImageToggle.getMeasuredWidth() / 2;
+                imageTop = menuButtonTop + mMenuButton.getMeasuredHeight() / 2 - mImageToggle.getMeasuredHeight() / 2;
+                mImageToggle.layout(imageLeft, imageTop, imageLeft + mImageToggle.getMeasuredWidth(),
+                    imageTop + mImageToggle.getMeasuredHeight());
+                break;
+            case 1 :
+                //down
+                menuButtonTop = getPaddingTop();
+                menuButtonLeft = buttonsHorizontalCenter - mMenuButton.getMeasuredWidth() / 2;
+                mMenuButton.layout(menuButtonLeft, menuButtonTop, menuButtonLeft + mMenuButton.getMeasuredWidth(),
                 menuButtonTop + mMenuButton.getMeasuredHeight());
+                imageLeft = buttonsHorizontalCenter - mImageToggle.getMeasuredWidth() / 2;
+                imageTop = menuButtonTop + mMenuButton.getMeasuredHeight() / 2 - mImageToggle.getMeasuredHeight() / 2;
+                mImageToggle.layout(imageLeft, imageTop, imageLeft + mImageToggle.getMeasuredWidth(),
+                    imageTop + mImageToggle.getMeasuredHeight());
+                break;
+            case 2 :
+                //left
+                menuButtonTop = buttonsVerticalCenter - mMenuButton.getMeasuredHeight() / 2;
+                menuButtonLeft = r - l - mMenuButton.getMeasuredWidth() - getPaddingLeft();
+                mMenuButton.layout(menuButtonLeft, menuButtonTop, menuButtonLeft + mMenuButton.getMeasuredWidth(),
+                    menuButtonTop + mMenuButton.getMeasuredHeight());
+                imageTop = buttonsVerticalCenter - mImageToggle.getMeasuredHeight() / 2;
+                imageLeft = menuButtonLeft + mMenuButton.getMeasuredWidth() / 2 - mImageToggle.getMeasuredWidth() / 2;
+                mImageToggle.layout(imageLeft, imageTop, imageLeft + mImageToggle.getMeasuredWidth(),
+                    imageTop + mImageToggle.getMeasuredHeight());
+                break;
 
-        int imageLeft = buttonsHorizontalCenter - mImageToggle.getMeasuredWidth() / 2;
-        int imageTop = menuButtonTop + mMenuButton.getMeasuredHeight() / 2 - mImageToggle.getMeasuredHeight() / 2;
+            case 3 :
+                //right
+                menuButtonLeft = getPaddingLeft();
+                menuButtonTop = buttonsVerticalCenter - mMenuButton.getMeasuredHeight() / 2;
+                mMenuButton.layout(menuButtonLeft, menuButtonTop, menuButtonLeft + mMenuButton.getMeasuredWidth(),
+                    menuButtonTop + mMenuButton.getMeasuredHeight());
+                imageTop = buttonsVerticalCenter - mImageToggle.getMeasuredHeight() / 2;
+                imageLeft = menuButtonLeft + mMenuButton.getMeasuredWidth() / 2 - mImageToggle.getMeasuredWidth() / 2;
+                mImageToggle.layout(imageLeft, imageTop, imageLeft + mImageToggle.getMeasuredWidth(),
+                    imageTop + mImageToggle.getMeasuredHeight());
 
-        mImageToggle.layout(imageLeft, imageTop, imageLeft + mImageToggle.getMeasuredWidth(),
-                imageTop + mImageToggle.getMeasuredHeight());
 
-        int nextY = openUp
-                ? menuButtonTop + mMenuButton.getMeasuredHeight() + mButtonSpacing
-                : menuButtonTop;
+                break;
+        }
+
+        int nextY = 0;
+        int nextX = 0;
+
+        switch (mOpenDirection){
+            case 0 :
+                //up
+                nextY = menuButtonTop + mMenuButton.getMeasuredHeight() + mButtonSpacing;
+                break;
+            case 1 :
+                //down
+                nextY = menuButtonTop;
+                break;
+            case 2 :
+                //left
+                nextX = menuButtonLeft + mMenuButton.getMeasuredWidth() + mButtonSpacing;
+                break;
+            case 3 :
+                //right
+                nextX = menuButtonLeft;
+                break;
+        }
+
 
         for (int i = mButtonsCount - 1; i >= 0; i--) {
+
             View child = getChildAt(i);
 
             if (child == mImageToggle) continue;
@@ -391,8 +527,33 @@ public class FloatingActionMenu extends ViewGroup {
 
             if (fab.getVisibility() == GONE) continue;
 
-            int childX = buttonsHorizontalCenter - fab.getMeasuredWidth() / 2;
-            int childY = openUp ? nextY - fab.getMeasuredHeight() - mButtonSpacing : nextY;
+            int childX = 0;
+            int childY = 0;
+
+            switch (mOpenDirection){
+                case 0 :
+                    //up
+                    childX = buttonsHorizontalCenter - fab.getMeasuredWidth() / 2;
+                    childY = nextY - fab.getMeasuredHeight() - mButtonSpacing;
+                    break;
+                case 1 :
+                    //down
+                    childX = buttonsHorizontalCenter - fab.getMeasuredWidth() / 2;
+                    childY = nextY;
+                    break;
+                case 2 :
+                    //left
+                    childX = nextX - fab.getMeasuredWidth() - mButtonSpacing;
+                    childY = buttonsVerticalCenter - fab.getMeasuredHeight() / 2;
+                    break;
+                case 3 :
+                    //right
+                    childX = nextX;
+                    childY = buttonsVerticalCenter - fab.getMeasuredHeight() / 2;
+
+                    break;
+            }
+
 
             if (fab != mMenuButton) {
                 fab.layout(childX, childY, childX + fab.getMeasuredWidth(),
@@ -432,9 +593,26 @@ public class FloatingActionMenu extends ViewGroup {
                 }
             }
 
-            nextY = openUp
-                    ? childY - mButtonSpacing
-                    : childY + child.getMeasuredHeight() + mButtonSpacing;
+
+            switch (mOpenDirection){
+                case 0 :
+                    //up
+                    nextY = childY - mButtonSpacing;
+                    break;
+                case 1 :
+                    //down
+                    nextY = childY + child.getMeasuredHeight() + mButtonSpacing;
+                    break;
+                case 2 :
+                    //left
+                    nextX = childX - mButtonSpacing;
+                    break;
+                case 3 :
+                    //right
+                    nextX = childX + child.getMeasuredWidth() + mButtonSpacing;
+                    break;
+            }
+
         }
     }
 

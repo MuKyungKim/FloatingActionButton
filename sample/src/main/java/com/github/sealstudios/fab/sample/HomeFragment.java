@@ -1,6 +1,5 @@
-package com.github.clans.fab.sample;
+package com.github.sealstudios.fab.sample;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -13,7 +12,7 @@ import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.github.clans.fab.FloatingActionButton;
+import com.github.sealstudios.fab.FloatingActionButton;
 import com.github.fab.sample.R;
 
 import java.util.ArrayList;

@@ -77,6 +77,8 @@
         <attr name="menu_openDirection" format="enum">
             <enum name="up" value="0" />
             <enum name="down" value="1" />
+            <enum name="left" value="2" />
+            <enum name="right" value="3" />
         </attr>
         <attr name="menu_backgroundColor" format="color" />
         <attr name="menu_fab_label" format="string" />

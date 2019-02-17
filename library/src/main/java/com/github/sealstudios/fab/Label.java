@@ -1,4 +1,4 @@
-package com.github.clans.fab;
+package com.github.sealstudios.fab;
 
 import android.annotation.TargetApi;
 import android.content.Context;
