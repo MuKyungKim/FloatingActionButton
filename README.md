@@ -1,4 +1,5 @@
-# THIS IS NOT MY WORK IT IS CLANS I HAVE REVIVIED HIS LIBRARY FOR THE SAKE OF ADDING RIGHT AND LEFT OPENING FLOATING ACTION BUTTON MENUS ALL CREDIT TO HIM AND HIS HARD WORK
+# THIS IS NOT MY WORK 
+This library is Clans floating action button library which I have forked in order to add the ability to open menus left and right
 # FloatingActionButton
 Everything clans did with this library works I haven't broken anything, but I have added left and right opening,
 
