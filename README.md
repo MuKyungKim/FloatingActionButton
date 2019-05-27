@@ -11,3 +11,41 @@ implementation 'com.github.martipello:FloatingActionButton:v2.0'
 
 and check out the examples, again all done by clans, with very slight tweak by me
 
+change app:menu_openDirection="left" to up, down, left or right
+
+example
+
+<com.github.sealstudios.fab.FloatingActionMenu
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:id="@+id/speak_fab"
+  app:layout_anchor="@id/sentence_container"
+  app:layout_anchorGravity="bottom|right|end"
+  app:menu_icon="@drawable/ic_play_arrow_white_24dp"
+  app:fab_colorNormal="@color/primary_blue"
+  app:menu_openDirection="left"
+  android:layout_margin="@dimen/fab_margin">
+
+  <com.github.sealstudios.fab.FloatingActionButton
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  app:fab_size="mini"
+  app:menu_icon="@drawable/ic_play_arrow_white_24dp"
+  app:fab_colorNormal="@color/primary_blue"/>
+
+  <com.github.sealstudios.fab.FloatingActionButton
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  app:fab_size="mini"
+  app:menu_icon="@drawable/ic_play_arrow_white_24dp"
+  app:fab_colorNormal="@color/primary_blue"/>
+
+  <com.github.sealstudios.fab.FloatingActionButton
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  app:fab_size="mini"
+  app:menu_icon="@drawable/ic_play_arrow_white_24dp"
+  app:fab_colorNormal="@color/primary_blue"/>
+
+  </com.github.sealstudios.fab.FloatingActionMenu>
+
