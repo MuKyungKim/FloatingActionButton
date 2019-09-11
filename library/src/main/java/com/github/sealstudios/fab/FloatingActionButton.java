@@ -1314,10 +1314,13 @@ public class    FloatingActionButton extends ImageButton {
 //        return color;
 //    }
 
+
+    //<item name="colorControlHighlight">@color/ripple_color</item>
+
     private static int getFabPressedColor(Context context) {
         int colorAttr;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            colorAttr = android.R.attr.colorAccent;
+            colorAttr = android.R.attr.colorControlHighlight;
         } else {
             //Get colorAccent defined for AppCompat
             colorAttr = context.getResources().getIdentifier("fabPressedColor", "attr", context.getPackageName());
@@ -1330,7 +1333,7 @@ public class    FloatingActionButton extends ImageButton {
     private static int getDefaultFabRippleColor(Context context) {
         int colorAttr;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            colorAttr = android.R.attr.colorAccent;
+            colorAttr = android.R.attr.colorControlHighlight;
         } else {
             //Get colorAccent defined for AppCompat
             colorAttr = context.getResources().getIdentifier("fabRippleColor", "attr", context.getPackageName());
