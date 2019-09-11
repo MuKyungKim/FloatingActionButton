@@ -120,10 +120,10 @@ public class    FloatingActionButton extends ImageButton {
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         TypedArray attr = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, defStyleAttr, 0);
 
-        mColorNormal = attr.getColor(R.styleable.FloatingActionButton_fab_colorNormal, 0xFFDA4336);
-        mColorPressed = attr.getColor(R.styleable.FloatingActionButton_fab_colorPressed, 0xFFE75043);
+        mColorNormal = attr.getColor(R.styleable.FloatingActionButton_fab_colorNormal, getThemeAccentColor(context));
+        mColorPressed = attr.getColor(R.styleable.FloatingActionButton_fab_colorPressed, getFabPressedColor(context));
         mColorDisabled = attr.getColor(R.styleable.FloatingActionButton_fab_colorDisabled, 0xFFAAAAAA);
-        mColorRipple = attr.getColor(R.styleable.FloatingActionButton_fab_colorRipple, 0x99FFFFFF);
+        mColorRipple = attr.getColor(R.styleable.FloatingActionButton_fab_colorRipple, getDefaultFabRippleColor(context));
 
         mShowShadow = attr.getBoolean(R.styleable.FloatingActionButton_fab_showShadow, true);
         mShadowColor = attr.getColor(R.styleable.FloatingActionButton_fab_shadowColor, 0x66000000);
@@ -1306,12 +1306,51 @@ public class    FloatingActionButton extends ImageButton {
     /**
      * Get the default colors
      */
-    private int getColor(int colorAttr) {
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] { colorAttr });
-        int color = a.getColor(0, 0);
-        a.recycle();
-        return color;
+//    private int getColor(int colorAttr) {
+//        TypedValue typedValue = new TypedValue();
+//        TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] { colorAttr });
+//        int color = a.getColor(0, 0);
+//        a.recycle();
+//        return color;
+//    }
+
+    private static int getFabPressedColor(Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorAccent;
+        } else {
+            //Get colorAccent defined for AppCompat
+            colorAttr = context.getResources().getIdentifier("fabPressedColor", "attr", context.getPackageName());
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
+    }
+
+    private static int getDefaultFabRippleColor(Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorAccent;
+        } else {
+            //Get colorAccent defined for AppCompat
+            colorAttr = context.getResources().getIdentifier("fabRippleColor", "attr", context.getPackageName());
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
+    }
+
+    private static int getThemeAccentColor(Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorAccent;
+        } else {
+            //Get colorAccent defined for AppCompat
+            colorAttr = context.getResources().getIdentifier("colorAccent", "attr", context.getPackageName());
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
     }
 
     /**
