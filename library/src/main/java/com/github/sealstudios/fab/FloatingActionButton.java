@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Outline;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
@@ -26,6 +27,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -117,10 +119,12 @@ public class    FloatingActionButton extends ImageButton {
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         TypedArray attr = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionButton, defStyleAttr, 0);
+
         mColorNormal = attr.getColor(R.styleable.FloatingActionButton_fab_colorNormal, 0xFFDA4336);
         mColorPressed = attr.getColor(R.styleable.FloatingActionButton_fab_colorPressed, 0xFFE75043);
         mColorDisabled = attr.getColor(R.styleable.FloatingActionButton_fab_colorDisabled, 0xFFAAAAAA);
         mColorRipple = attr.getColor(R.styleable.FloatingActionButton_fab_colorRipple, 0x99FFFFFF);
+
         mShowShadow = attr.getBoolean(R.styleable.FloatingActionButton_fab_showShadow, true);
         mShadowColor = attr.getColor(R.styleable.FloatingActionButton_fab_shadowColor, 0x66000000);
         mShadowRadius = attr.getDimensionPixelSize(R.styleable.FloatingActionButton_fab_shadowRadius, mShadowRadius);
@@ -712,7 +716,7 @@ public class    FloatingActionButton extends ImageButton {
 
         @Override
         public int getOpacity() {
-            return 0;
+            return PixelFormat.UNKNOWN;
         }
     }
 
@@ -794,6 +798,11 @@ public class    FloatingActionButton extends ImageButton {
             mIcon = drawable;
             updateBackground();
         }
+    }
+
+    @Override
+    public Drawable getDrawable() {
+        return mIcon;
     }
 
     @Override
@@ -1292,6 +1301,17 @@ public class    FloatingActionButton extends ImageButton {
         if (label != null) {
             label.show(animate);
         }
+    }
+
+    /**
+     * Get the default colors
+     */
+    private int getColor(int colorAttr) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] { colorAttr });
+        int color = a.getColor(0, 0);
+        a.recycle();
+        return color;
     }
 
     /**
