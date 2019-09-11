@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/martipello/FloatingActionButton.svg)](https://jitpack.io/#martipello/FloatingActionButton)
+
 # THIS IS NOT MY WORK 
 This library is Clans floating action button library which I have forked in order to add the ability to open menus left and right, i wont be submitting a pull request as labels arent quite right
 # FloatingActionButton
