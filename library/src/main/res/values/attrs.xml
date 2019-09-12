@@ -25,6 +25,7 @@
         <attr name="fab_progress_max" format="integer" />
         <attr name="fab_progress" format="integer" />
         <attr name="fab_progress_showBackground" format="boolean" />
+        <attr name="fab_keep_progress_size" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="FloatingActionMenu">

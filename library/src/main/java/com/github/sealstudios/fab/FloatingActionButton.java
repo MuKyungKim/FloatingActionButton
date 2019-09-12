@@ -71,6 +71,7 @@ public class    FloatingActionButton extends ImageButton {
 
     // Progress
     private boolean mProgressBarEnabled;
+    private boolean keepProgressBarEnabledSize;
     private int mProgressWidth = Util.dpToPx(getContext(), 6f);
     private int mProgressColor;
     private int mProgressBackgroundColor;
@@ -137,6 +138,7 @@ public class    FloatingActionButton extends ImageButton {
         mProgressBackgroundColor = attr.getColor(R.styleable.FloatingActionButton_fab_progress_backgroundColor, 0x4D000000);
         mProgressMax = attr.getInt(R.styleable.FloatingActionButton_fab_progress_max, mProgressMax);
         mShowProgressBackground = attr.getBoolean(R.styleable.FloatingActionButton_fab_progress_showBackground, true);
+        keepProgressBarEnabledSize = attr.getBoolean(R.styleable.FloatingActionButton_fab_keep_progress_size, false);
 
         if (attr.hasValue(R.styleable.FloatingActionButton_fab_progress)) {
             mProgress = attr.getInt(R.styleable.FloatingActionButton_fab_progress, 0);
@@ -186,7 +188,7 @@ public class    FloatingActionButton extends ImageButton {
 
     private int calculateMeasuredWidth() {
         int width = getCircleSize() + calculateShadowWidth();
-        if (mProgressBarEnabled) {
+        if (mProgressBarEnabled  | keepProgressBarEnabledSize) {
             width += mProgressWidth * 2;
         }
         return width;
@@ -194,7 +196,7 @@ public class    FloatingActionButton extends ImageButton {
 
     private int calculateMeasuredHeight() {
         int height = getCircleSize() + calculateShadowHeight();
-        if (mProgressBarEnabled) {
+        if (mProgressBarEnabled | keepProgressBarEnabledSize) {
             height += mProgressWidth * 2;
         }
         return height;
@@ -235,6 +237,7 @@ public class    FloatingActionButton extends ImageButton {
         super.onDraw(canvas);
 
         if (mProgressBarEnabled) {
+
             if (mShowProgressBackground) {
                 canvas.drawArc(mProgressCircleBounds, 360, 360, false, mBackgroundPaint);
             }
@@ -242,6 +245,7 @@ public class    FloatingActionButton extends ImageButton {
             boolean shouldInvalidate = false;
 
             if (mProgressIndeterminate) {
+
                 shouldInvalidate = true;
 
                 long deltaTime = SystemClock.uptimeMillis() - mLastTimeAnimated;
@@ -264,6 +268,7 @@ public class    FloatingActionButton extends ImageButton {
                 }
 
                 canvas.drawArc(mProgressCircleBounds, from, to, false, mProgressPaint);
+
             } else {
                 if (mCurrentProgress != mTargetProgress) {
                     shouldInvalidate = true;
@@ -314,6 +319,7 @@ public class    FloatingActionButton extends ImageButton {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+
         saveButtonOriginalPosition();
 
         if (mShouldProgressIndeterminate) {
@@ -368,7 +374,7 @@ public class    FloatingActionButton extends ImageButton {
         int circleInsetHorizontal = hasShadow() ? mShadowRadius + Math.abs(mShadowXOffset) : 0;
         int circleInsetVertical = hasShadow() ? mShadowRadius + Math.abs(mShadowYOffset) : 0;
 
-        if (mProgressBarEnabled) {
+        if (mProgressBarEnabled | keepProgressBarEnabledSize) {
             circleInsetHorizontal += mProgressWidth;
             circleInsetVertical += mProgressWidth;
         }
@@ -614,6 +620,7 @@ public class    FloatingActionButton extends ImageButton {
         ss.mProgress = this.mProgress;
         ss.mAnimateProgress = this.mAnimateProgress;
         ss.mShowProgressBackground = this.mShowProgressBackground;
+        ss.keepProgressEnabledSize = this.keepProgressBarEnabledSize;
 
         return ss;
     }
@@ -635,6 +642,7 @@ public class    FloatingActionButton extends ImageButton {
         this.mProgressColor = ss.mProgressColor;
         this.mProgressBackgroundColor = ss.mProgressBackgroundColor;
         this.mShouldProgressIndeterminate = ss.mShouldProgressIndeterminate;
+        this.keepProgressBarEnabledSize = ss.keepProgressEnabledSize;
         this.mShouldSetProgress = ss.mShouldSetProgress;
         this.mProgress = ss.mProgress;
         this.mAnimateProgress = ss.mAnimateProgress;
@@ -656,7 +664,7 @@ public class    FloatingActionButton extends ImageButton {
             circleInsetHorizontal = hasShadow() ? mShadowRadius + Math.abs(mShadowXOffset) : 0;
             circleInsetVertical = hasShadow() ? mShadowRadius + Math.abs(mShadowYOffset) : 0;
 
-            if (mProgressBarEnabled) {
+            if (mProgressBarEnabled | keepProgressBarEnabledSize) {
                 circleInsetHorizontal += mProgressWidth;
                 circleInsetVertical += mProgressWidth;
             }
@@ -736,6 +744,7 @@ public class    FloatingActionButton extends ImageButton {
         boolean mShouldSetProgress;
         boolean mAnimateProgress;
         boolean mShowProgressBackground;
+        boolean keepProgressEnabledSize;
 
         ProgressSavedState(Parcelable superState) {
             super(superState);
@@ -757,6 +766,7 @@ public class    FloatingActionButton extends ImageButton {
             this.mShouldSetProgress = in.readInt() != 0;
             this.mAnimateProgress = in.readInt() != 0;
             this.mShowProgressBackground = in.readInt() != 0;
+            this.keepProgressEnabledSize = in.readInt() != 0;
         }
 
         @Override
@@ -776,6 +786,7 @@ public class    FloatingActionButton extends ImageButton {
             out.writeInt(this.mShouldSetProgress ? 1 : 0);
             out.writeInt(this.mAnimateProgress ? 1 : 0);
             out.writeInt(this.mShowProgressBackground ? 1 : 0);
+            out.writeInt(this.keepProgressEnabledSize ? 1 : 0);
         }
 
         public static final Parcelable.Creator<ProgressSavedState> CREATOR =
@@ -1173,6 +1184,7 @@ public class    FloatingActionButton extends ImageButton {
         }
 
         mProgressBarEnabled = indeterminate;
+
         mShouldUpdateButtonPosition = true;
         mProgressIndeterminate = indeterminate;
         mLastTimeAnimated = SystemClock.uptimeMillis();
