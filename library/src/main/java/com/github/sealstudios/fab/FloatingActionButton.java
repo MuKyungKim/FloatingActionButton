@@ -1371,7 +1371,7 @@ public class    FloatingActionButton extends ImageButton {
     private static int getThemePrimaryColor(Context context) {
         int colorAttr;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            colorAttr = android.R.attr.colorAccent;
+            colorAttr = android.R.attr.colorPrimary;
         } else {
             //Get colorAccent defined for AppCompat
             colorAttr = context.getResources().getIdentifier("colorPrimary", "attr", context.getPackageName());
