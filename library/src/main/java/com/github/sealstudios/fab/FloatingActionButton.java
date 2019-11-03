@@ -59,6 +59,7 @@ public class    FloatingActionButton extends ImageButton {
     private int mColorPressed;
     private int mColorDisabled;
     private int mColorRipple;
+
     private Drawable mIcon;
     private int mIconSize = Util.dpToPx(getContext(), 24f);
     private Animation mShowAnimation;
@@ -522,9 +523,15 @@ public class    FloatingActionButton extends ImageButton {
     }
 
     void setColors(int colorNormal, int colorPressed, int colorRipple) {
-        mColorNormal = colorNormal;
-        mColorPressed = colorPressed;
-        mColorRipple = colorRipple;
+        if (mColorNormal != colorNormal) {
+            mColorNormal = colorNormal;
+        }
+        if (mColorPressed != colorPressed) {
+            mColorPressed = colorPressed;
+        }
+        if (mColorRipple != colorRipple) {
+            mColorRipple = colorRipple;
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

@@ -9,6 +9,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -110,6 +111,12 @@ public class FloatingActionMenu extends ViewGroup {
     private String mMenuLabelText;
     private boolean mUsingMenuLabel;
 
+    private int mColorNormal;
+    private int mColorPressed;
+    private int mColorDisabled;
+    private int mColorRipple;
+
+
     public interface OnMenuToggleListener {
         void onMenuToggle(boolean opened);
     }
@@ -129,6 +136,12 @@ public class FloatingActionMenu extends ViewGroup {
 
     private void init(Context context, AttributeSet attrs) {
         TypedArray attr = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionMenu, 0, 0);
+
+        mColorNormal = attr.getColor(R.styleable.FloatingActionMenu_menu_colorNormal, getThemeAccentColor(context));
+        mColorPressed = attr.getColor(R.styleable.FloatingActionMenu_menu_colorPressed, getFabPressedColor(context));
+        mColorDisabled = attr.getColor(R.styleable.FloatingActionButton_fab_colorDisabled, 0xFFAAAAAA);
+        mColorRipple = attr.getColor(R.styleable.FloatingActionMenu_menu_colorRipple, getDefaultFabRippleColor(context));
+
         mButtonSpacing = attr.getDimensionPixelSize(R.styleable.FloatingActionMenu_menu_buttonSpacing, mButtonSpacing);
         mLabelsMargin = attr.getDimensionPixelSize(R.styleable.FloatingActionMenu_menu_labels_margin, mLabelsMargin);
         mLabelsPosition = attr.getInt(R.styleable.FloatingActionMenu_menu_labels_position, LABELS_POSITION_LEFT);
@@ -258,7 +271,7 @@ public class FloatingActionMenu extends ViewGroup {
             mMenuButton.mShadowXOffset = Util.dpToPx(getContext(), mMenuShadowXOffset);
             mMenuButton.mShadowYOffset = Util.dpToPx(getContext(), mMenuShadowYOffset);
         }
-        mMenuButton.setColors(mMenuColorNormal, mMenuColorPressed, mMenuColorRipple);
+        mMenuButton.setColors(mColorNormal, mColorPressed, mColorRipple);
         mMenuButton.mShadowColor = mMenuShadowColor;
         mMenuButton.mFabSize = mMenuFabSize;
         mMenuButton.updateBackground();
@@ -1183,6 +1196,60 @@ public class FloatingActionMenu extends ViewGroup {
     public String getMenuButtonLabelText() {
         return mMenuLabelText;
     }
+
+
+    private static int getFabPressedColor(Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorAccent;
+        } else {
+            //Get colorAccent defined for AppCompat
+            colorAttr = context.getResources().getIdentifier("fabPressedColor", "attr", context.getPackageName());
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
+    }
+
+    private static int getDefaultFabRippleColor(Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorControlHighlight;
+        } else {
+            //Get colorAccent defined for AppCompat
+            colorAttr = context.getResources().getIdentifier("fabRippleColor", "attr", context.getPackageName());
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
+    }
+
+    private static int getThemeAccentColor(Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorAccent;
+        } else {
+            //Get colorAccent defined for AppCompat
+            colorAttr = context.getResources().getIdentifier("colorAccent", "attr", context.getPackageName());
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
+    }
+
+    private static int getThemePrimaryColor(Context context) {
+        int colorAttr;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorPrimary;
+        } else {
+            //Get colorAccent defined for AppCompat
+            colorAttr = context.getResources().getIdentifier("colorPrimary", "attr", context.getPackageName());
+        }
+        TypedValue outValue = new TypedValue();
+        context.getTheme().resolveAttribute(colorAttr, outValue, true);
+        return outValue.data;
+    }
+
 
     public void setOnMenuButtonClickListener(OnClickListener clickListener) {
         mMenuButton.setOnClickListener(clickListener);

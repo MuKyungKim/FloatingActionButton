@@ -2,6 +2,7 @@
 
     <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/app_primary</item>
+        <item name="colorAccent">@color/grey</item>
         <item name="colorPrimaryDark">@color/app_primary_dark</item>
         <item name="actionBarStyle">@style/ActionBarStyle</item>
     </style>
