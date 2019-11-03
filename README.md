@@ -1,7 +1,7 @@
 [![](https://jitpack.io/v/martipello/FloatingActionButton.svg)](https://jitpack.io/#martipello/FloatingActionButton)
 
-# THIS IS NOT MY WORK 
-This library is Clans floating action button library which I have forked in order to add the ability to open menus left and right, i wont be submitting a pull request as labels arent quite right
+# THIS IS A FORK OF CLANS FLOATING ACTION BUTTON 
+This library is Clans floating action button library which I have forked in order to add the ability to open menus left and right, and to make the button take into account default styles. I wont be submitting a pull request as labels arent quite right
 # FloatingActionButton
 Everything clans did with this library works I haven't broken anything in his implementation, but I have added left and right opening and labels do not work for this,
 
