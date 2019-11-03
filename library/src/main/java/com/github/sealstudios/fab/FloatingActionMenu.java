@@ -31,6 +31,9 @@ import java.util.List;
 
 public class FloatingActionMenu extends ViewGroup {
 
+    private Animation mShowAnimation;
+    private Animation mHideAnimation;
+
     private static final int ANIMATION_DURATION = 300;
     private static final float CLOSED_PLUS_ROTATION = 0f;
     private static final float OPENED_PLUS_ROTATION_LEFT = -90f - 45f;
@@ -211,6 +214,8 @@ public class FloatingActionMenu extends ViewGroup {
         createMenuButton();
         initMenuButtonAnimations(attr);
 
+        initShowAnimation(attr);
+        initHideAnimation(attr);
         attr.recycle();
     }
 
@@ -1258,4 +1263,72 @@ public class FloatingActionMenu extends ViewGroup {
     public void setOnMenuButtonLongClickListener(OnLongClickListener longClickListener) {
         mMenuButton.setOnLongClickListener(longClickListener);
     }
+
+
+
+
+
+
+
+
+    public boolean isHidden() {
+        return getVisibility() == INVISIBLE;
+    }
+
+    public void show(boolean animate) {
+        if (isHidden()) {
+            if (animate) {
+                playShowAnimation();
+            }
+            super.setVisibility(VISIBLE);
+        }
+    }
+
+    public void hide(boolean animate) {
+        if (!isHidden()) {
+            if (animate) {
+                playHideAnimation();
+            }
+            super.setVisibility(INVISIBLE);
+        }
+    }
+
+    private void initShowAnimation(TypedArray attr) {
+        int resourceId = attr.getResourceId(R.styleable.FloatingActionButton_fab_showAnimation, R.anim.fab_scale_up);
+        mShowAnimation = AnimationUtils.loadAnimation(getContext(), resourceId);
+    }
+
+    private void initHideAnimation(TypedArray attr) {
+        int resourceId = attr.getResourceId(R.styleable.FloatingActionButton_fab_hideAnimation, R.anim.fab_scale_down);
+        mHideAnimation = AnimationUtils.loadAnimation(getContext(), resourceId);
+    }
+
+    public void setShowAnimation(Animation showAnimation) {
+        mShowAnimation = showAnimation;
+    }
+
+    public void setHideAnimation(Animation hideAnimation) {
+        mHideAnimation = hideAnimation;
+    }
+
+
+    Animation getShowAnimation() {
+        return mShowAnimation;
+    }
+
+    Animation getHideAnimation() {
+        return mHideAnimation;
+    }
+
+    void playShowAnimation() {
+        mHideAnimation.cancel();
+        startAnimation(mShowAnimation);
+    }
+
+    void playHideAnimation() {
+        mShowAnimation.cancel();
+        startAnimation(mHideAnimation);
+    }
+
+
 }

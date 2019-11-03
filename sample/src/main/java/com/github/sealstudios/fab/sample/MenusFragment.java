@@ -37,6 +37,7 @@ public class MenusFragment extends Fragment {
     private FloatingActionButton fab3;
 
     private FloatingActionButton fabEdit;
+    private boolean isHidden = false;
 
     private List<FloatingActionMenu> menus = new ArrayList<>();
     private Handler mUiHandler = new Handler();
@@ -95,6 +96,17 @@ public class MenusFragment extends Fragment {
         menuLabelsRight.hideMenuButton(false);
 
         fabEdit = (FloatingActionButton) view.findViewById(R.id.fab_edit);
+        fabEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isHidden = !isHidden;
+                if (isHidden){
+                    menuRed.show(true);
+                } else {
+                    menuRed.hide(true);
+                }
+            }
+        });
         fabEdit.setShowAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.scale_up));
         fabEdit.setHideAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.scale_down));
     }

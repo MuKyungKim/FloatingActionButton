@@ -85,6 +85,8 @@
         <attr name="menu_fab_label" format="string" />
         <attr name="menu_fab_show_animation" format="reference" />
         <attr name="menu_fab_hide_animation" format="reference" />
+        <attr name="menu_showAnimation" format="reference" />
+        <attr name="menu_hideAnimation" format="reference" />
     </declare-styleable>
 
 </resources>
