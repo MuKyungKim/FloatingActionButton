@@ -1,5 +1,7 @@
 package com.github.sealstudios.fab;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -27,6 +29,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -35,10 +38,10 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class    FloatingActionButton extends ImageButton {
+public class FloatingActionButtonImageToggle extends ViewGroup {
 
     public static final int SIZE_NORMAL = 0;
     public static final int SIZE_MINI = 1;
@@ -60,10 +63,18 @@ public class    FloatingActionButton extends ImageButton {
     private int mColorDisabled;
     private int mColorRipple;
 
+    private int mMaxButtonWidth;
+    private int mMaxButtonHeight;
+
     private Drawable mIcon;
-    private int mIconSize = Util.dpToPx(getContext(), 24f);
+    private ImageView mImageToggle;
+//    private int mIconSize = Util.dpToPx(getContext(), 24f);
     private Animation mShowAnimation;
     private Animation mHideAnimation;
+
+    private Animation mImageToggleShowAnimation;
+    private Animation mImageToggleHideAnimation;
+
     private String mLabelText;
     private OnClickListener mClickListener;
     private Drawable mBackgroundDrawable;
@@ -96,25 +107,26 @@ public class    FloatingActionButton extends ImageButton {
     private int mProgress;
     private boolean mAnimateProgress;
     private boolean mShouldProgressIndeterminate;
+    private AnimatorSet mIconToggleSet;
     private boolean mShouldSetProgress;
     private int mProgressMax = 100;
     private boolean mShowProgressBackground;
 
-    public FloatingActionButton(Context context) {
+    public FloatingActionButtonImageToggle(Context context) {
         this(context, null);
     }
 
-    public FloatingActionButton(Context context, AttributeSet attrs) {
+    public FloatingActionButtonImageToggle(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FloatingActionButtonImageToggle(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public FloatingActionButtonImageToggle(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs, defStyleAttr);
     }
@@ -154,9 +166,22 @@ public class    FloatingActionButton extends ImageButton {
                 setElevationCompat(elevation);
             }
         }
+        mIcon = attr.getDrawable(R.styleable.FloatingActionButton_fab_menu_icon);
+        if (mIcon == null) {
+            mIcon = getResources().getDrawable(R.drawable.fab_add);
+        }
+
+        mImageToggle = new ImageView(getContext());
+        mImageToggle.setImageDrawable(mIcon);
+        addView(mImageToggle);
 
         initShowAnimation(attr);
         initHideAnimation(attr);
+//
+//        createDefaultIconAnimation();
+//
+//        initMenuButtonAnimations(attr);
+
         attr.recycle();
 
         if (isInEditMode()) {
@@ -172,6 +197,15 @@ public class    FloatingActionButton extends ImageButton {
         setClickable(true);
     }
 
+//    private void initMenuButtonAnimations(TypedArray attr) {
+//        int showResId = attr.getResourceId(R.styleable.FloatingActionMenu_menu_fab_show_animation, R.anim.fab_scale_up);
+//        mImageToggleShowAnimation = AnimationUtils.loadAnimation(getContext(), showResId);
+//
+//        int hideResId = attr.getResourceId(R.styleable.FloatingActionMenu_menu_fab_hide_animation, R.anim.fab_scale_down);
+//        mImageToggleHideAnimation = AnimationUtils.loadAnimation(getContext(), hideResId);
+//    }
+//
+
     private void initShowAnimation(TypedArray attr) {
         int resourceId = attr.getResourceId(R.styleable.FloatingActionButton_fab_showAnimation, R.anim.fab_scale_up);
         mShowAnimation = AnimationUtils.loadAnimation(getContext(), resourceId);
@@ -181,6 +215,28 @@ public class    FloatingActionButton extends ImageButton {
         int resourceId = attr.getResourceId(R.styleable.FloatingActionButton_fab_hideAnimation, R.anim.fab_scale_down);
         mHideAnimation = AnimationUtils.loadAnimation(getContext(), resourceId);
     }
+
+
+//    private void createDefaultIconAnimation() {
+//        float collapseAngle;
+//        float expandAngle;
+//
+//        ObjectAnimator collapseAnimator = ObjectAnimator.ofFloat(
+//                mImageToggle,
+//                "rotation",
+//                collapseAngle,
+//                CLOSED_PLUS_ROTATION
+//        );
+//
+//        ObjectAnimator expandAnimator = ObjectAnimator.ofFloat(
+//                mImageToggle,
+//                "rotation",
+//                CLOSED_PLUS_ROTATION,
+//                expandAngle
+//        );
+//
+//    }
+
 
     private int getCircleSize() {
         return getResources().getDimensionPixelSize(mFabSize == SIZE_NORMAL
@@ -229,9 +285,48 @@ public class    FloatingActionButton extends ImageButton {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        mMaxButtonWidth = 0;
+        mMaxButtonHeight = 0;
         setMeasuredDimension(calculateMeasuredWidth(), calculateMeasuredHeight());
+
+        measureChildWithMargins(mImageToggle, widthMeasureSpec,
+                0, heightMeasureSpec, 0);
+
+
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+
+            if (child.getVisibility() == GONE || child == mImageToggle) continue;
+
+            measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+            mMaxButtonWidth = Math.max(mMaxButtonWidth, child.getMeasuredWidth());
+            mMaxButtonHeight = Math.max(mMaxButtonHeight, child.getMeasuredHeight());
+        }
+
+
     }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+
+        int imageLeft = 0;
+        int imageTop = 0;
+
+        imageLeft = calculateMeasuredWidth() /2 - mImageToggle.getMeasuredWidth() / 2;
+        imageTop = calculateMeasuredHeight() / 2 - mImageToggle.getMeasuredHeight() / 2;
+
+        mImageToggle.layout(imageLeft, imageTop, imageLeft + mImageToggle.getMeasuredWidth(),
+                imageTop + mImageToggle.getMeasuredHeight());
+
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+//        bringChildToFront(mImageToggle);
+    }
+
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -293,6 +388,29 @@ public class    FloatingActionButton extends ImageButton {
         }
     }
 
+
+    @Override
+    public MarginLayoutParams generateLayoutParams(AttributeSet attrs) {
+        return new MarginLayoutParams(getContext(), attrs);
+    }
+
+    @Override
+    protected MarginLayoutParams generateLayoutParams(LayoutParams p) {
+        return new MarginLayoutParams(p);
+    }
+
+    @Override
+    protected MarginLayoutParams generateDefaultLayoutParams() {
+        return new MarginLayoutParams(MarginLayoutParams.WRAP_CONTENT,
+                MarginLayoutParams.WRAP_CONTENT);
+    }
+
+    @Override
+    protected boolean checkLayoutParams(LayoutParams p) {
+        return p instanceof MarginLayoutParams;
+    }
+
+
     private void updateProgressLength(long deltaTimeInMillis) {
         if (mPausedTimeWithoutGrowing >= PAUSE_GROWING_TIME) {
             mTimeStartGrowing += deltaTimeInMillis;
@@ -342,12 +460,12 @@ public class    FloatingActionButton extends ImageButton {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public void setLayoutParams(ViewGroup.LayoutParams params) {
-        if (params instanceof ViewGroup.MarginLayoutParams && mUsingElevationCompat) {
-            ((ViewGroup.MarginLayoutParams) params).leftMargin += getShadowX();
-            ((ViewGroup.MarginLayoutParams) params).topMargin += getShadowY();
-            ((ViewGroup.MarginLayoutParams) params).rightMargin += getShadowX();
-            ((ViewGroup.MarginLayoutParams) params).bottomMargin += getShadowY();
+    public void setLayoutParams(LayoutParams params) {
+        if (params instanceof MarginLayoutParams && mUsingElevationCompat) {
+            ((MarginLayoutParams) params).leftMargin += getShadowX();
+            ((MarginLayoutParams) params).topMargin += getShadowY();
+            ((MarginLayoutParams) params).rightMargin += getShadowX();
+            ((MarginLayoutParams) params).bottomMargin += getShadowY();
         }
         super.setLayoutParams(params);
     }
@@ -358,20 +476,21 @@ public class    FloatingActionButton extends ImageButton {
             layerDrawable = new LayerDrawable(new Drawable[]{
                     new Shadow(),
                     createFillDrawable(),
-                    getIconDrawable()
+                    new ColorDrawable(Color.TRANSPARENT)
             });
         } else {
             layerDrawable = new LayerDrawable(new Drawable[]{
                     createFillDrawable(),
-                    getIconDrawable()
+                    new ColorDrawable(Color.TRANSPARENT)
             });
         }
 
-        int iconSize = -1;
-        if (getIconDrawable() != null) {
-            iconSize = Math.max(getIconDrawable().getIntrinsicWidth(), getIconDrawable().getIntrinsicHeight());
-        }
-        int iconOffset = (getCircleSize() - (iconSize > 0 ? iconSize : mIconSize)) / 2;
+//        int iconSize = -1;
+//        if (getIconDrawable() != null) {
+//            iconSize = Math.max(getIconDrawable().getIntrinsicWidth(), getIconDrawable().getIntrinsicHeight());
+//        }
+//        int iconOffset = (getCircleSize() - (iconSize > 0 ? iconSize : mIconSize)) / 2;
+        int iconOffset = 0;
         int circleInsetHorizontal = hasShadow() ? mShadowRadius + Math.abs(mShadowXOffset) : 0;
         int circleInsetVertical = hasShadow() ? mShadowRadius + Math.abs(mShadowYOffset) : 0;
 
@@ -388,7 +507,7 @@ public class    FloatingActionButton extends ImageButton {
                 circleInsetVertical
         );*/
         layerDrawable.setLayerInset(
-                hasShadow() ? 2 : 1,
+                hasShadow() ? 1 : 0,
                 circleInsetHorizontal + iconOffset,
                 circleInsetVertical + iconOffset,
                 circleInsetHorizontal + iconOffset,
@@ -796,8 +915,8 @@ public class    FloatingActionButton extends ImageButton {
             out.writeInt(this.keepProgressEnabledSize ? 1 : 0);
         }
 
-        public static final Parcelable.Creator<ProgressSavedState> CREATOR =
-                new Parcelable.Creator<ProgressSavedState>() {
+        public static final Creator<ProgressSavedState> CREATOR =
+                new Creator<ProgressSavedState>() {
                     public ProgressSavedState createFromParcel(Parcel in) {
                         return new ProgressSavedState(in);
                     }
@@ -810,24 +929,44 @@ public class    FloatingActionButton extends ImageButton {
 
     /* ===== API methods ===== */
 
-    @Override
+
+    public void setIconToggleAnimatorSet(AnimatorSet toggleAnimatorSet) {
+        mIconToggleSet = toggleAnimatorSet;
+    }
+
+    public AnimatorSet getIconToggleAnimatorSet() {
+        return mIconToggleSet;
+    }
+
+    public void animateToggleImageView(){
+        if (mIconToggleSet != null) {
+            mIconToggleSet.start();
+        }
+    }
+
+    public ImageView getToggleImageView(){
+        return mImageToggle;
+    }
+
+
+    //    @Override
     public void setImageDrawable(Drawable drawable) {
         if (mIcon != drawable) {
-            mIcon = drawable;
+            mImageToggle.setImageDrawable(drawable);
             updateBackground();
         }
     }
 
-    @Override
+//    @Override
     public Drawable getDrawable() {
         return mIcon;
     }
 
-    @Override
+//    @Override
     public void setImageResource(int resId) {
         Drawable drawable = getResources().getDrawable(resId);
         if (mIcon != drawable) {
-            mIcon = drawable;
+            mImageToggle.setImageDrawable(drawable);
             updateBackground();
         }
     }
@@ -842,7 +981,7 @@ public class    FloatingActionButton extends ImageButton {
                 @Override
                 public void onClick(View v) {
                     if (mClickListener != null) {
-                        mClickListener.onClick(FloatingActionButton.this);
+                        mClickListener.onClick(FloatingActionButtonImageToggle.this);
                     }
                 }
             });
@@ -1168,7 +1307,7 @@ public class    FloatingActionButton extends ImageButton {
             mShowShadow = false;
             updateBackground();
 
-            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            LayoutParams layoutParams = getLayoutParams();
             if (layoutParams != null) {
                 setLayoutParams(layoutParams);
             }
@@ -1411,5 +1550,9 @@ public class    FloatingActionButton extends ImageButton {
     public void setLabelTextColor(ColorStateList colors) {
         getLabelView().setTextColor(colors);
     }
-}
 
+    public ImageView getImageToggle(){
+        return mImageToggle;
+    }
+
+}

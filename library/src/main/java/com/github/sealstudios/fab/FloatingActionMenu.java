@@ -210,12 +210,14 @@ public class FloatingActionMenu extends ViewGroup {
         mCloseInterpolator = new AnticipateInterpolator();
         mLabelsContext = new ContextThemeWrapper(getContext(), mLabelsStyle);
 
-        initBackgroundDimAnimation();
-        createMenuButton();
-        initMenuButtonAnimations(attr);
-
         initShowAnimation(attr);
         initHideAnimation(attr);
+
+        initBackgroundDimAnimation();
+        createMenuButton();
+
+        initMenuButtonAnimations(attr);
+
         attr.recycle();
     }
 
@@ -301,15 +303,10 @@ public class FloatingActionMenu extends ViewGroup {
             collapseAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_RIGHT : OPENED_PLUS_ROTATION_LEFT;
             expandAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_RIGHT : OPENED_PLUS_ROTATION_LEFT;
 
-
-
         }else if (mOpenDirection == OPEN_LEFT) {
-
 
             // sets collapse and expand angle
             // sets labels animation and fab icon animation
-
-
 
             collapseAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_LEFT : OPENED_PLUS_ROTATION_RIGHT;
             expandAngle = mLabelsPosition == LABELS_POSITION_LEFT ? OPENED_PLUS_ROTATION_LEFT : OPENED_PLUS_ROTATION_RIGHT;
@@ -1264,12 +1261,9 @@ public class FloatingActionMenu extends ViewGroup {
         mMenuButton.setOnLongClickListener(longClickListener);
     }
 
-
-
-
-
-
-
+    public ImageView geImageToggle(){
+        return mImageToggle;
+    }
 
     public boolean isHidden() {
         return getVisibility() == INVISIBLE;

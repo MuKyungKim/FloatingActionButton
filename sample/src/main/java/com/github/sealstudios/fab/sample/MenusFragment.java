@@ -86,6 +86,15 @@ public class MenusFragment extends Fragment {
 
         fab1.setEnabled(false);
         menuRed.setClosedOnTouchOutside(true);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                menuRed.show(true);
+                menuRed.setShowAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.show_from_bottom));
+                menuRed.setHideAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.hide_to_bottom));
+            }
+        }, 300);
         menuBlue.setIconAnimated(false);
 
         menuDown.hideMenuButton(false);

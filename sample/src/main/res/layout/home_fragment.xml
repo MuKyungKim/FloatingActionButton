@@ -9,14 +9,49 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.github.sealstudios.fab.FloatingActionButton
-        android:id="@+id/fab"
+<!--    <com.github.sealstudios.fab.FloatingActionMenu-->
+<!--        android:id="@+id/fab"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|right"-->
+<!--        android:layout_marginBottom="12dp"-->
+<!--        android:layout_marginRight="16dp"-->
+<!--        android:src="@drawable/ic_menu"-->
+<!--        app:fab_elevationCompat="4dp" />-->
+
+
+    <com.github.sealstudios.fab.FloatingActionButtonImageToggle
+        android:id="@+id/fab_image_toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
+        app:fab_size="normal"
+        app:fab_menu_icon="@drawable/ic_close"
+        app:fab_colorNormal="@color/colorAccent"
+        app:fab_colorPressed="@color/app_primary_dark"
+        app:fab_colorRipple="@color/black"
         android:layout_marginBottom="12dp"
         android:layout_marginRight="16dp"
-        android:src="@drawable/ic_menu"
-        app:fab_elevationCompat="4dp" />
+        app:fab_progress_indeterminate="false"
+        app:fab_keep_progress_size="true"
+        app:fab_progress_showBackground="false"
+        app:layout_anchorGravity="bottom|end" />
+
+    <com.github.sealstudios.fab.FloatingActionMenu
+        android:id="@+id/fab_menu_standard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        app:menu_colorNormal="@color/colorAccent"
+        app:menu_colorPressed="@color/app_primary_dark"
+        app:menu_colorRipple="@color/black"
+        android:layout_marginBottom="12dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_close"
+        app:fab_progress_indeterminate="false"
+        app:fab_keep_progress_size="true"
+        app:fab_progress_showBackground="false"
+        app:layout_anchorGravity="bottom|end" />
+
 
 </FrameLayout>
